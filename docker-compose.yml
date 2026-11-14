@@ -1,0 +1,17 @@
+# Cloady reads the published port from `ports:` — 3000 is a web port, so the
+# app gets an https://<name>-<code>-<workspace>.cloady.io URL with TLS
+# terminated at Cloady's edge. Xray serves plain WebSocket on 3000 inside.
+# CPU/RAM are deliberately NOT declared: Cloady's defaults (0.5 vCPU / 1 GB)
+# are exactly the free tier.
+services:
+  xray:
+    build: .
+    image: xray-cloady-node
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      # UUID is intentionally NOT set here: set it as a secret variable in
+      # Cloady (Settings -> Environment) at deploy time. If unset, the
+      # entrypoint generates one and prints it in the deploy logs.
+    restart: unless-stopped
